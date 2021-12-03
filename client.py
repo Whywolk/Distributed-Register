@@ -48,7 +48,7 @@ class ClientApp:
         self.port_label.pack(side='top')
 
         reg = self.connection.register(self.is_num)
-        self.port_entry = ttk.Entry(self.connection, validate='key', validatecommand=(reg, '%P'))
+        self.port_entry = ttk.Entry(self.connection, validate='key', validatecommand=(reg, '%S'))
         self.port_entry.pack(side='top')
 
         self.connection.configure(labelanchor='nw', relief='flat', text='Connection')
@@ -109,7 +109,7 @@ class ClientApp:
         self.label_form_1 = ttk.Label(self.forms, text="User ID")
         self.label_form_1.pack()
         reg = self.forms.register(self.is_num)
-        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%P'))
+        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%S'))
         self.entry_form_1.pack()
 
         self.button_form = ttk.Button(self.forms, text="Apply", command=self.find_user)
@@ -139,7 +139,7 @@ class ClientApp:
         self.label_form_1 = ttk.Label(self.forms, text="User ID")
         self.label_form_1.pack()
         reg = self.forms.register(self.is_num)
-        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%P'))
+        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%S'))
         self.entry_form_1.pack()
 
         self.label_form_2 = ttk.Label(self.forms, text="User name")
@@ -155,21 +155,62 @@ class ClientApp:
         self.button_form = ttk.Button(self.forms, text="Apply", command=self.delete_user)
         self.button_form.pack()
 
-    def clear_frame(self, frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
+    def find_user(self):
+        uid = self.entry_form_1.get()
+        if not uid:
+            self.txt = ttk.Label(self.output, text="Enter UID!!")
+            self.txt.pack(side='top')
+            return
 
-    def find_user(self, uid):
-        pass
+        port = self.port_entry.get()
+        resp = HttpClient.get_user(port, int(uid))
+        text = resp.json()
+        print(text)
 
-    def create_user(self, name, password):
-        pass
+        for key, value in text.items():
+            self.txt = ttk.Label(self.output, text=f"{key}: {value}")
+            self.txt.pack(side='top')
 
-    def delete_user(self, uid, name, password):
-        pass
+
+    def create_user(self):
+        name = self.entry_form_1.get()
+        password = self.entry_form_2.get()
+
+        if (not name) or (not password):
+            self.txt = ttk.Label(self.output, text="Enter data!")
+            self.txt.pack(side='top')
+            return
+
+        port = self.port_entry.get()
+        resp = HttpClient.create(port, name, password)
+        print(resp.status_code)
+
+        self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
+        self.txt.pack(side='top')
+
+    def delete_user(self):
+        uid = self.entry_form_1.get()
+        name = self.entry_form_2.get()
+        password = self.entry_form_3.get()
+
+        if (not uid) or (not name) or (not password):
+            self.txt = ttk.Label(self.output, text="Enter data!")
+            self.txt.pack(side='top')
+            return
+
+        port = self.port_entry.get()
+        resp = HttpClient.delete(port, int(uid), name, password)
+        print(resp.status_code)
+
+        self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
+        self.txt.pack(side='top')
 
     def is_num(self, string):
         return string.isdigit()
+
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
 
 if __name__ == '__main__':
     app = ClientApp()
