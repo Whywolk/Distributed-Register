@@ -15,17 +15,12 @@ if __name__ == "__main__":
             # port 500x get (getting each element)
             # FIXME: This shit still won't work normally
             if argc == 3:
-                response = requests.get("http://localhost:" + server_port + "/user")
+                response = requests.get("http://localhost:" + server_port + "/users")
 
             # port 500x get x
             elif argc == 4:
                 response = requests.get("http://localhost:" + server_port + "/user",
                                         json={'uid': sys.argv[4]})
-
-            # port 500x get username password (DON"T WORK!!!!!)
-            elif argc == 5:
-                response = requests.get("http://localhost:" + server_port + "/user",
-                                        json={'name': sys.argv[4], 'password': sys.argv[5]})
 
         # port 500x post username password
         elif argc >= 5 and sys.argv[3] == 'post':

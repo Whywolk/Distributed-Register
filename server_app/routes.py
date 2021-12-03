@@ -19,7 +19,10 @@ def api_add():
             or not 'uid' in request.json:
         abort(400)
 
-    old_uid = User.query.order_by(User.uid).all().pop()
+    old_uid = 0
+    old_uid_list = User.query.order_by(User.uid).all()
+    if old_uid_list:
+        old_uid = old_uid_list.pop().uid + 1
     user = User(name=request.json['name'],
                 password=request.json['password'],
                 uid=request.json['uid'])
@@ -97,11 +100,11 @@ def get():
                 print('[ROUTE][GET] New UID added: ' + str(user_json['uid']))
 
     # User not found
-    user = User.query.filter_by(uid=request.json['uid']).first().to_json()
+    user = User.query.filter_by(uid=request.json['uid']).first()
     if user is None:
         abort(400)
 
-    return jsonify(user), 200
+    return jsonify(user.to_json()), 200
 
 
 @app.route('/user', methods=['POST'])
@@ -110,8 +113,10 @@ def add():
             or not 'name' in request.json:
         abort(400)
 
-    old_uid = User.query.order_by(User.uid).all().pop()
-    new_uid = old_uid.uid + 1
+    new_uid = 1
+    old_uid_list = User.query.order_by(User.uid).all()
+    if old_uid_list:
+        new_uid = old_uid_list.pop().uid + 1
 
     user = User(name=request.json['name'],
                 password=hashlib.sha256(request.json['password'].encode('utf-8')).hexdigest(),

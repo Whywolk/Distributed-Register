@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = 'ok'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 db = SQLAlchemy(app)
 
-ports_list = [5000, 5001]
+ports_list = [5000, 5001, 5002]
 if argc >= 2:
     ports_list.remove(int(sys.argv[2]))
 
