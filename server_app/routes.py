@@ -4,58 +4,6 @@ from server_app import app, db
 from server_app.model import User
 from server_app.service import Service
 
-
-@app.route('/api/users', methods=['GET'])
-def api_get():
-    users = User.query.all()
-    users = [user.to_json() for user in users]
-    return jsonify(users), 200
-
-
-@app.route('/api/users', methods=['POST'])
-def api_add():
-    if not request.json or not 'password' in request.json \
-            or not 'name' in request.json\
-            or not 'uid' in request.json:
-        abort(400)
-
-    old_uid = User.query.order_by(User.uid).all().pop()
-    user = User(name=request.json['name'],
-                password=request.json['password'],
-                uid=request.json['uid'])
-
-    # Somehow we got the same uid. Oops
-    if user.uid == old_uid:
-        abort(400)
-
-    # We can't add users with the same name
-    nickname = User.query.filter_by(name=user.name).first()
-    if nickname is not None:
-        abort(400)
-
-    db.session.add(user)
-    db.session.commit()
-
-    return jsonify(), 201
-
-
-@app.route('/api/users', methods=['DELETE'])
-def api_delete():
-    if not request.json or not 'uid' in request.json \
-            or not 'name' in request.json:
-        abort(400)
-
-    # User not found
-    user = User.query.filter_by(uid=request.json['uid'], name=request.json['name']).first()
-    if user is None:
-        abort(400)
-
-    db.session.delete(user)
-    db.session.commit()
-
-    return jsonify(), 201
-
-
 @app.route('/users', methods=['GET'])
 def get_all():
     users = User.query.all()
@@ -97,17 +45,17 @@ def get():
                 print('[ROUTE][GET] New UID added: ' + str(user_json['uid']))
 
     # User not found
-    user = User.query.filter_by(uid=request.json['uid']).first().to_json()
+    user = User.query.filter_by(uid=request.json['uid']).first()
     if user is None:
         abort(400)
 
-    return jsonify(user), 200
+    return jsonify(user.to_json()), 200
 
 
 @app.route('/user', methods=['POST'])
 def add():
     if not request.json or not 'password' in request.json \
-            or not 'name' in request.json:
+                        or not 'name' in request.json:
         abort(400)
 
     old_uid = User.query.order_by(User.uid).all().pop()
@@ -132,7 +80,7 @@ def add():
 @app.route('/user', methods=['DELETE'])
 def delete():
     if not request.json or not 'uid' in request.json \
-            or not 'name' in request.json:
+                        or not 'name' in request.json:
         abort(400)
 
     # Updating DB information

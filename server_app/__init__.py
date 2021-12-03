@@ -13,7 +13,7 @@ else:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ok'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_name}'
 db = SQLAlchemy(app)
 
 ports_list = [5000, 5001]
@@ -21,3 +21,4 @@ if argc >= 2:
     ports_list.remove(int(sys.argv[2]))
 
 from server_app import routes
+from server_app import api_routes

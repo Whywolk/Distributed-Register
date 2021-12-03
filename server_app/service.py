@@ -4,6 +4,7 @@ from server_app import ports_list
 
 
 class Service:
+    @staticmethod
     def update(username, password, uid):
         for port in ports_list:
             response = requests.post("http://localhost:" + str(port) + "/api/users",
@@ -14,6 +15,7 @@ class Service:
             else:
                 print('[SERVER][POST] Sync error!')
 
+    @staticmethod
     def get():
         response_list = []
         for port in ports_list:
@@ -28,6 +30,7 @@ class Service:
 
         return response_list
 
+    @staticmethod
     def delete(uid, username):
         for port in ports_list:
             response = requests.delete("http://localhost:" + str(port) + "/api/users",
