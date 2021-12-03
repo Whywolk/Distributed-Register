@@ -15,13 +15,17 @@ def api_add():
                         or not 'uid' in request.json:
         abort(400)
 
-    old_uid = User.query.order_by(User.uid).all().pop()
+    new_uid = 0
+    old_uid_list = User.query.order_by(User.uid)
+    if not old_uid_list:
+        new_uid = old_uid_list.pop().uid + 1
+
     user = User(name=request.json['name'],
                 password=request.json['password'],
                 uid=request.json['uid'])
 
     # Somehow we got the same uid. Oops
-    if user.uid == old_uid:
+    if user.uid == new_uid:
         abort(400)
 
     # We can't add users with the same name

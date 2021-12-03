@@ -58,8 +58,10 @@ def add():
                         or not 'name' in request.json:
         abort(400)
 
-    old_uid = User.query.order_by(User.uid).all().pop()
-    new_uid = old_uid.uid + 1
+    new_uid = 1
+    old_uid_list = User.query.order_by(User.uid)
+    if not old_uid_list:
+        new_uid = old_uid_list.pop().uid + 1
 
     user = User(name=request.json['name'],
                 password=hashlib.sha256(request.json['password'].encode('utf-8')).hexdigest(),
