@@ -114,7 +114,7 @@
       </object>
     </child>
     <child>
-      <object class="ttk.Frame" id="bottop">
+      <object class="ttk.Frame" id="bottom">
         <property name="height">200</property>
         <property name="width">200</property>
         <layout manager="pack">
@@ -123,8 +123,6 @@
         </layout>
         <child>
           <object class="ttk.Frame" id="forms">
-            <property name="height">200</property>
-            <property name="width">200</property>
             <layout manager="pack">
               <property name="propagate">True</property>
               <property name="side">top</property>
@@ -133,8 +131,6 @@
         </child>
         <child>
           <object class="ttk.Frame" id="output">
-            <property name="height">200</property>
-            <property name="width">200</property>
             <layout manager="pack">
               <property name="propagate">True</property>
               <property name="side">top</property>

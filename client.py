@@ -35,46 +35,60 @@ class ClientApp:
         self.main = tk.Tk() if master is None else tk.Toplevel(master)
         self.top = ttk.Frame(self.main)
         self.connection = ttk.Labelframe(self.top)
+
         self.host_label = ttk.Label(self.connection)
         self.host_label.configure(text='Host')
         self.host_label.pack(side='top')
+
         self.host_entry = ttk.Entry(self.connection)
         self.host_entry.pack(side='top')
+
         self.port_label = ttk.Label(self.connection)
         self.port_label.configure(text='Port')
         self.port_label.pack(side='top')
-        self.port_entry = ttk.Entry(self.connection)
+
+        reg = self.connection.register(self.is_num)
+        self.port_entry = ttk.Entry(self.connection, validate='key', validatecommand=(reg, '%P'))
         self.port_entry.pack(side='top')
+
         self.connection.configure(labelanchor='nw', relief='flat', text='Connection')
         self.connection.pack(side='top')
+
         self.top.pack(side='top')
         self.middle = ttk.Frame(self.main)
         self.actions = ttk.Labelframe(self.middle)
+
         self.button1 = ttk.Button(self.actions)
-        self.button1.configure(text='Get user')
+        self.button1.configure(text='Get user', command=self.render_find_user_form)
         self.button1.pack(side='left')
+
         self.button2 = ttk.Button(self.actions)
-        self.button2.configure(text='Get users')
+        self.button2.configure(text='Get users', command=self.render_find_users)
         self.button2.pack(side='left')
+
         self.button3 = ttk.Button(self.actions)
-        self.button3.configure(text='Create user')
+        self.button3.configure(text='Create user', command=self.render_create_user_form)
         self.button3.pack(side='left')
+
         self.button4 = ttk.Button(self.actions)
-        self.button4.configure(text='Delete user')
+        self.button4.configure(text='Delete user', command=self.render_delete_user_from)
         self.button4.pack(side='left')
+
         self.actions.configure(height='200', takefocus=False, text='Actions', width='200')
         self.actions.pack(side='left')
+
         self.middle.configure(relief='flat', takefocus=False)
         self.middle.pack(side='top')
-        self.bottop = ttk.Frame(self.main)
-        self.forms = ttk.Frame(self.bottop)
-        self.forms.configure(height='200', width='200')
+
+        self.bottom = ttk.Frame(self.main)
+
+        self.forms = ttk.Frame(self.bottom)
         self.forms.pack(side='top')
-        self.output = ttk.Frame(self.bottop)
-        self.output.configure(height='200', width='200')
+
+        self.output = ttk.Frame(self.bottom)
         self.output.pack(side='top')
-        self.bottop.configure(height='200', width='200')
-        self.bottop.pack(side='top')
+
+        self.bottom.pack(side='top')
         self.main.minsize(300, 200)
 
         # Main widget
@@ -85,16 +99,77 @@ class ClientApp:
         self.mainwindow.mainloop()
 
     def render_find_users(self):
-        pass
+        self.clear_frame(self.forms)
+        self.clear_frame(self.output)
 
     def render_find_user_form(self):
-        pass
+        self.clear_frame(self.forms)
+        self.clear_frame(self.output)
+
+        self.label_form_1 = ttk.Label(self.forms, text="User ID")
+        self.label_form_1.pack()
+        reg = self.forms.register(self.is_num)
+        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%P'))
+        self.entry_form_1.pack()
+
+        self.button_form = ttk.Button(self.forms, text="Apply", command=self.find_user)
+        self.button_form.pack()
 
     def render_create_user_form(self):
-        pass
+        self.clear_frame(self.forms)
+        self.clear_frame(self.output)
+
+        self.label_form_1 = ttk.Label(self.forms, text="User name")
+        self.label_form_1.pack()
+        self.entry_form_1 = ttk.Entry(self.forms)
+        self.entry_form_1.pack()
+
+        self.label_form_2 = ttk.Label(self.forms, text="Password")
+        self.label_form_2.pack()
+        self.entry_form_2 = ttk.Entry(self.forms)
+        self.entry_form_2.pack()
+
+        self.button_form = ttk.Button(self.forms, text="Apply", command=self.create_user)
+        self.button_form.pack()
 
     def render_delete_user_from(self):
+        self.clear_frame(self.forms)
+        self.clear_frame(self.output)
+
+        self.label_form_1 = ttk.Label(self.forms, text="User ID")
+        self.label_form_1.pack()
+        reg = self.forms.register(self.is_num)
+        self.entry_form_1 = ttk.Entry(self.forms, validate='key', validatecommand=(reg, '%P'))
+        self.entry_form_1.pack()
+
+        self.label_form_2 = ttk.Label(self.forms, text="User name")
+        self.label_form_2.pack()
+        self.entry_form_2 = ttk.Entry(self.forms)
+        self.entry_form_2.pack()
+
+        self.label_form_3 = ttk.Label(self.forms, text="Password")
+        self.label_form_3.pack()
+        self.entry_form_3 = ttk.Entry(self.forms)
+        self.entry_form_3.pack()
+
+        self.button_form = ttk.Button(self.forms, text="Apply", command=self.delete_user)
+        self.button_form.pack()
+
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+    def find_user(self, uid):
         pass
+
+    def create_user(self, name, password):
+        pass
+
+    def delete_user(self, uid, name, password):
+        pass
+
+    def is_num(self, string):
+        return string.isdigit()
 
 if __name__ == '__main__':
     app = ClientApp()
