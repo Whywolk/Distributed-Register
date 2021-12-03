@@ -12,12 +12,11 @@ if __name__ == "__main__":
             server_port = sys.argv[2]
 
         if argc >= 3 and sys.argv[3] == 'get':
-            # port 500x get (getting each element)
-            # FIXME: This shit still won't work normally
+            # port 500x get all
             if argc == 3:
                 response = requests.get("http://localhost:" + server_port + "/users")
 
-            # port 500x get x
+            # port 500x get uid
             elif argc == 4:
                 response = requests.get("http://localhost:" + server_port + "/user",
                                         json={'uid': sys.argv[4]})
