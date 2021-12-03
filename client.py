@@ -27,9 +27,9 @@ if __name__ == "__main__":
                                      json={'name': sys.argv[4], 'password': sys.argv[5]})
 
         # port 500x delete uid username
-        elif argc >= 5 and sys.argv[3] == 'delete':
+        elif argc >= 6 and sys.argv[3] == 'delete':
             response = requests.delete("http://localhost:" + server_port + "/user",
-                                       json={'uid': sys.argv[4], 'name': sys.argv[5]})
+                                       json={'uid': sys.argv[4], 'name': sys.argv[5], 'password': sys.argv[6]})
         else:
             print("[Error] Bad arguments bro. Using: port 500x get/post/delete ...")
     else:

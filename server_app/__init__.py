@@ -20,5 +20,7 @@ ports_list = [5000, 5001, 5002]
 if argc >= 2:
     ports_list.remove(int(sys.argv[2]))
 
+admin_password = ['8005ad6755726d1289a2655dd52d9c1036563b75487b65973eb370938f1dbd8c']
+
 from server_app import routes
 from server_app import api_routes

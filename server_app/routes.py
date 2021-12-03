@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort
 import hashlib
-from server_app import app, db
+from server_app import app, db, admin_password
 from server_app.model import User
 from server_app.service import Service
 
@@ -83,8 +83,15 @@ def add():
 @app.route('/user', methods=['DELETE'])
 def delete():
     if not request.json or not 'uid' in request.json \
-                        or not 'name' in request.json:
+                        or not 'name' in request.json\
+                        or not 'password' in request.json:
         abort(400)
+
+    # Checking user permission for deleting users
+    request_pass = hashlib.sha256(request.json['password'].encode('utf-8')).hexdigest()
+    for admin_pass in admin_password:
+        if request_pass != admin_pass:
+            abort(403)
 
     # Updating DB information
     another_users_list = Service.get()
