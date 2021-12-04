@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from client_app.http_client import HttpClient
+from threading import Thread
 
 class ClientApp:
     def __init__(self, master=None):
@@ -9,12 +10,12 @@ class ClientApp:
         self.top = ttk.Frame(self.main)
         self.connection = ttk.Labelframe(self.top)
 
-        self.host_label = ttk.Label(self.connection)
-        self.host_label.configure(text='Host')
-        self.host_label.pack(side='top')
-
-        self.host_entry = ttk.Entry(self.connection)
-        self.host_entry.pack(side='top')
+        # self.host_label = ttk.Label(self.connection)
+        # self.host_label.configure(text='Host')
+        # self.host_label.pack(side='top')
+        #
+        # self.host_entry = ttk.Entry(self.connection)
+        # self.host_entry.pack(side='top')
 
         self.port_label = ttk.Label(self.connection)
         self.port_label.configure(text='Port')
@@ -75,6 +76,29 @@ class ClientApp:
         self.clear_frame(self.forms)
         self.clear_frame(self.output)
 
+        self.button2['state'] = tk.DISABLED
+
+        port = self.port_entry.get()
+        resp = HttpClient.get_users(port)
+        users = resp.json()
+        print(users)
+
+        self.button2['state'] = tk.NORMAL
+
+        self.scroll = ttk.Scrollbar(self.output)
+        self.scroll.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt = tk.Text(self.output, yscrollcommand=self.scroll.set)
+
+        for user in users:
+            for key, value in user.items():
+                self.txt.insert(tk.END, f"{key}: {value}\n")
+            self.txt.insert(tk.END, '\n')
+        self.txt.pack(side='top', fill=tk.X)
+        self.txt.config(state=tk.DISABLED)
+
+        self.scroll.config(command=self.txt.yview())
+
     def render_find_user_form(self):
         self.clear_frame(self.forms)
         self.clear_frame(self.output)
@@ -129,6 +153,9 @@ class ClientApp:
         self.button_form.pack()
 
     def find_user(self):
+        self.clear_frame(self.output)
+        self.button_form['state'] = tk.DISABLED
+
         uid = self.entry_form_1.get()
         if not uid:
             self.txt = ttk.Label(self.output, text="Enter UID!!")
@@ -137,17 +164,22 @@ class ClientApp:
 
         port = self.port_entry.get()
         resp = HttpClient.get_user(port, int(uid))
-        text = resp.json()
-        print(text)
+        user = resp.json()
+        print(user)
 
-        for key, value in text.items():
-            self.txt = ttk.Label(self.output, text=f"{key}: {value}")
-            self.txt.pack(side='top')
+        self.button_form['state'] = tk.NORMAL
 
+        self.txt = tk.Text(self.output)
+        for key, value in user.items():
+            self.txt.insert(tk.END, f"{key}: {value}\n")
+        self.txt.pack(side='top')
+        self.txt.config(state=tk.DISABLED)
 
     def create_user(self):
+        self.clear_frame(self.output)
         name = self.entry_form_1.get()
         password = self.entry_form_2.get()
+        self.button_form['state'] = tk.DISABLED
 
         if (not name) or (not password):
             self.txt = ttk.Label(self.output, text="Enter data!")
@@ -157,14 +189,17 @@ class ClientApp:
         port = self.port_entry.get()
         resp = HttpClient.create(port, name, password)
         print(resp.status_code)
+        self.button_form['state'] = tk.NORMAL
 
         self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
         self.txt.pack(side='top')
 
     def delete_user(self):
+        self.clear_frame(self.output)
         uid = self.entry_form_1.get()
         name = self.entry_form_2.get()
         password = self.entry_form_3.get()
+        self.button_form['state'] = tk.DISABLED
 
         if (not uid) or (not name) or (not password):
             self.txt = ttk.Label(self.output, text="Enter data!")
@@ -174,6 +209,7 @@ class ClientApp:
         port = self.port_entry.get()
         resp = HttpClient.delete(port, int(uid), name, password)
         print(resp.status_code)
+        self.button_form['state'] = tk.NORMAL
 
         self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
         self.txt.pack(side='top')
