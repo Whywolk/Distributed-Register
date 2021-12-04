@@ -69,6 +69,10 @@ class ClientApp:
         self.mainwindow = self.main
         self.mainwindow.title("Distributed Register")
 
+        self.buttons = [self.button1, self.button2, self.button3, self.button4]
+
+        self.http_client = HttpClient()
+
     def run(self):
         self.mainwindow.mainloop()
 
@@ -76,28 +80,13 @@ class ClientApp:
         self.clear_frame(self.forms)
         self.clear_frame(self.output)
 
-        self.button2['state'] = tk.DISABLED
+        for button in self.buttons:
+            button['state'] = tk.DISABLED
 
         port = self.port_entry.get()
-        resp = HttpClient.get_users(port)
-        users = resp.json()
-        print(users)
-
-        self.button2['state'] = tk.NORMAL
-
-        self.scroll = ttk.Scrollbar(self.output)
-        self.scroll.pack(side=tk.RIGHT, fill=tk.Y)
-
-        self.txt = tk.Text(self.output, yscrollcommand=self.scroll.set)
-
-        for user in users:
-            for key, value in user.items():
-                self.txt.insert(tk.END, f"{key}: {value}\n")
-            self.txt.insert(tk.END, '\n')
-        self.txt.pack(side='top', fill=tk.X)
-        self.txt.config(state=tk.DISABLED)
-
-        self.scroll.config(command=self.txt.yview())
+        thread_rest = Thread(target=self.http_client.get_users, args=(port,))
+        thread_rest.start()
+        self.monitor(thread_rest, self.render_users_output)
 
     def render_find_user_form(self):
         self.clear_frame(self.forms)
@@ -154,7 +143,6 @@ class ClientApp:
 
     def find_user(self):
         self.clear_frame(self.output)
-        self.button_form['state'] = tk.DISABLED
 
         uid = self.entry_form_1.get()
         if not uid:
@@ -162,12 +150,62 @@ class ClientApp:
             self.txt.pack(side='top')
             return
 
-        port = self.port_entry.get()
-        resp = HttpClient.get_user(port, int(uid))
-        user = resp.json()
-        print(user)
+        self.buttons.append(self.button_form)
+        for button in self.buttons:
+            button['state'] = tk.DISABLED
 
-        self.button_form['state'] = tk.NORMAL
+        port = self.port_entry.get()
+        thread_rest = Thread(target=self.http_client.get_user, args=(port, int(uid),))
+        thread_rest.start()
+        self.monitor(thread_rest, self.render_user_output)
+
+    def create_user(self):
+        self.clear_frame(self.output)
+        name = self.entry_form_1.get()
+        password = self.entry_form_2.get()
+
+        if (not name) or (not password):
+            self.txt = ttk.Label(self.output, text="Enter data!")
+            self.txt.pack(side='top')
+            return
+
+        self.buttons.append(self.button_form)
+        for button in self.buttons:
+            button['state'] = tk.DISABLED
+
+        port = self.port_entry.get()
+        thread_rest = Thread(target=self.http_client.create, args=(port, name, password,))
+        thread_rest.start()
+        self.monitor(thread_rest, self.render_create_output)
+
+    def delete_user(self):
+        self.clear_frame(self.output)
+        uid = self.entry_form_1.get()
+        name = self.entry_form_2.get()
+        password = self.entry_form_3.get()
+
+        if (not uid) or (not name) or (not password):
+            self.txt = ttk.Label(self.output, text="Enter data!")
+            self.txt.pack(side='top')
+            return
+
+        self.buttons.append(self.button_form)
+        for button in self.buttons:
+            button['state'] = tk.DISABLED
+
+        port = self.port_entry.get()
+        thread_rest = Thread(target=self.http_client.delete, args=(port, int(uid), name, password,))
+        thread_rest.start()
+        self.monitor(thread_rest, self.render_delete_output)
+
+    def render_user_output(self):
+        if self.http_client.response.status_code != 200:
+            self.txt = ttk.Label(self.output, text="User doesn't exist!")
+            self.txt.pack(side='top')
+            return
+
+        user = self.http_client.response.json()
+        print(user)
 
         self.txt = tk.Text(self.output)
         for key, value in user.items():
@@ -175,43 +213,42 @@ class ClientApp:
         self.txt.pack(side='top')
         self.txt.config(state=tk.DISABLED)
 
-    def create_user(self):
-        self.clear_frame(self.output)
-        name = self.entry_form_1.get()
-        password = self.entry_form_2.get()
-        self.button_form['state'] = tk.DISABLED
+    def render_users_output(self):
+        users = self.http_client.response.json()
+        print(users)
 
-        if (not name) or (not password):
-            self.txt = ttk.Label(self.output, text="Enter data!")
-            self.txt.pack(side='top')
-            return
+        self.scroll = ttk.Scrollbar(self.output)
+        self.scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
-        port = self.port_entry.get()
-        resp = HttpClient.create(port, name, password)
-        print(resp.status_code)
-        self.button_form['state'] = tk.NORMAL
+        self.txt = tk.Text(self.output, yscrollcommand=self.scroll.set)
 
-        self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
+        for user in users:
+            for key, value in user.items():
+                self.txt.insert(tk.END, f"{key}: {value}\n")
+            self.txt.insert(tk.END, '\n')
+        self.txt.pack(side='top', fill=tk.X)
+        self.txt.config(state=tk.DISABLED)
+
+        self.scroll.config(command=self.txt.yview())
+
+    def render_create_output(self):
+        code = self.http_client.response.status_code
+        if code == 400:
+            msg = "User already exists!"
+        else:
+            msg = "Success"
+        self.txt = ttk.Label(self.output, text=msg)
         self.txt.pack(side='top')
 
-    def delete_user(self):
-        self.clear_frame(self.output)
-        uid = self.entry_form_1.get()
-        name = self.entry_form_2.get()
-        password = self.entry_form_3.get()
-        self.button_form['state'] = tk.DISABLED
-
-        if (not uid) or (not name) or (not password):
-            self.txt = ttk.Label(self.output, text="Enter data!")
-            self.txt.pack(side='top')
-            return
-
-        port = self.port_entry.get()
-        resp = HttpClient.delete(port, int(uid), name, password)
-        print(resp.status_code)
-        self.button_form['state'] = tk.NORMAL
-
-        self.txt = ttk.Label(self.output, text=f"Status code: {resp.status_code}")
+    def render_delete_output(self):
+        code = self.http_client.response.status_code
+        if code == 403:
+            msg = "No permission"
+        elif code == 400:
+            msg = "User doesn't exist"
+        else:
+            msg = "Success"
+        self.txt = ttk.Label(self.output, text=msg)
         self.txt.pack(side='top')
 
     def is_num(self, string):
@@ -220,3 +257,20 @@ class ClientApp:
     def clear_frame(self, frame):
         for widget in frame.winfo_children():
             widget.destroy()
+
+    def monitor(self, thread_rest, render_output):
+        if thread_rest.is_alive():
+            self.main.after(100, lambda: self.monitor(thread_rest, render_output))
+        else:
+            for button in self.buttons:
+                button['state'] = tk.NORMAL
+
+            if (self.http_client.response == None):
+                self.txt = ttk.Label(self.output, text="Wrong port")
+                self.txt.pack(side='top')
+            else:
+                render_output()
+
+            self.http_client.response = None
+            self.buttons = self.buttons[:4]
+

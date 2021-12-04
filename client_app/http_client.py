@@ -1,27 +1,22 @@
 import requests
 
 class HttpClient:
-    @staticmethod
-    def get_users(port):
-        response = requests.get("http://localhost:" + port + "/users")
-        return response
+    def __init__(self):
+        self.response = None
 
-    @staticmethod
-    def get_user(port, uid):
-        response = requests.get("http://localhost:" + port + "/user",
-                                json={'uid': uid})
-        return response
+    def get_users(self, port):
+        self.response = requests.get("http://localhost:" + port + "/users")
 
-    @staticmethod
-    def create(port, name, password):
-        response = requests.post("http://localhost:" + port + "/user",
-                                 json={'name': name, 'password': password})
-        return response
+    def get_user(self, port, uid):
+        self.response = requests.get("http://localhost:" + port + "/user",
+                                     json={'uid': uid})
 
-    @staticmethod
-    def delete(port, uid, name, password):
-        response = requests.delete("http://localhost:" + port + "/user",
-                                   json={'uid': uid,
-                                         'name': name,
-                                         'password': password})
-        return response
+    def create(self, port, name, password):
+        self.response = requests.post("http://localhost:" + port + "/user",
+                                      json={'name': name, 'password': password})
+
+    def delete(self ,port, uid, name, password):
+        self.response = requests.delete("http://localhost:" + port + "/user",
+                                       json={'uid': uid,
+                                             'name': name,
+                                             'password': password})
