@@ -5,18 +5,31 @@ class HttpClient:
         self.response = None
 
     def get_users(self, port):
-        self.response = requests.get("http://localhost:" + port + "/users")
+        try:
+            self.response = requests.get("http://localhost:" + port + "/users")
+        except:
+            pass
 
     def get_user(self, port, uid):
-        self.response = requests.get("http://localhost:" + port + "/user",
-                                     json={'uid': uid})
+        try:
+            self.response = requests.get("http://localhost:" + port + "/user",
+                                         json={'uid': uid})
+        except:
+            pass
 
     def create(self, port, name, password):
-        self.response = requests.post("http://localhost:" + port + "/user",
-                                      json={'name': name, 'password': password})
+        try:
+            self.response = requests.post("http://localhost:" + port + "/user",
+                                          json={'name': name,
+                                                'password': password})
+        except:
+            pass
 
     def delete(self ,port, uid, name, password):
-        self.response = requests.delete("http://localhost:" + port + "/user",
-                                       json={'uid': uid,
-                                             'name': name,
-                                             'password': password})
+        try:
+            self.response = requests.delete("http://localhost:" + port + "/user",
+                                            json={'uid': uid,
+                                                  'name': name,
+                                                  'password': password})
+        except:
+            pass

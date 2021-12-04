@@ -63,7 +63,7 @@ class ClientApp:
         self.output.pack(side='top')
 
         self.bottom.pack(side='top')
-        self.main.minsize(300, 200)
+        self.main.minsize(700, 500)
 
         # Main widget
         self.mainwindow = self.main
