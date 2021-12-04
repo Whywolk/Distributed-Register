@@ -18,7 +18,7 @@ def api_add():
         abort(400)
 
     old_uid = 0
-    old_uid_list = User.query.order_by(User.uid)
+    old_uid_list = User.query.order_by(User.uid).all()
     if old_uid_list:
         old_uid = old_uid_list.pop().uid + 1
 
