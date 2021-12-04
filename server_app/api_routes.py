@@ -15,12 +15,13 @@ def api_add():
     if not request.json or not 'password' in request.json \
                         or not 'name' in request.json\
                         or not 'uid' in request.json:
+        print("[DEBUG] request=" + str(request.json))
         abort(400)
 
     old_uid = 0
     old_uid_list = User.query.order_by(User.uid).all()
     if old_uid_list:
-        old_uid = old_uid_list.pop().uid + 1
+        old_uid = old_uid_list[-1].uid
 
     user = User(name=request.json['name'],
                 password=request.json['password'],
@@ -28,11 +29,15 @@ def api_add():
 
     # Somehow we got the same uid. Oops
     if user.uid == old_uid:
+        print("[DEBUG] Same uids! request.uid=" + str(user.uid) + ", name=" + str(user.name)
+              + ", old_uid=" + str(old_uid) + ", old name=" + str(old_uid_list[-1].name) + "oold uid=" +
+              str(old_uid_list[-1].uid))
         abort(400)
 
     # We can't add users with the same name
     nickname = User.query.filter_by(name=user.name).first()
     if nickname is not None:
+        print("[DEBUG] Same names! user.name=" + str(user.name))
         abort(400)
 
     db.session.add(user)
