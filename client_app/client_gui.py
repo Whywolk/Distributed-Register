@@ -80,6 +80,12 @@ class ClientApp:
         self.clear_frame(self.forms)
         self.clear_frame(self.output)
 
+        port = self.port_entry.get()
+        if not port:
+            self.txt = ttk.Label(self.output, text="Enter port!")
+            self.txt.pack(side='top')
+            return
+
         for button in self.buttons:
             button['state'] = tk.DISABLED
 
@@ -144,23 +150,36 @@ class ClientApp:
     def find_user(self):
         self.clear_frame(self.output)
 
+        port = self.port_entry.get()
+        if not port:
+            self.txt = ttk.Label(self.output, text="Enter port!")
+            self.txt.pack(side='top')
+            return
+
         uid = self.entry_form_1.get()
         if not uid:
             self.txt = ttk.Label(self.output, text="Enter UID!!")
             self.txt.pack(side='top')
             return
 
+
         self.buttons.append(self.button_form)
         for button in self.buttons:
             button['state'] = tk.DISABLED
 
-        port = self.port_entry.get()
         thread_rest = Thread(target=self.http_client.get_user, args=(port, int(uid),))
         thread_rest.start()
         self.monitor(thread_rest, self.render_user_output)
 
     def create_user(self):
         self.clear_frame(self.output)
+
+        port = self.port_entry.get()
+        if not port:
+            self.txt = ttk.Label(self.output, text="Enter port!")
+            self.txt.pack(side='top')
+            return
+
         name = self.entry_form_1.get()
         password = self.entry_form_2.get()
 
@@ -180,6 +199,13 @@ class ClientApp:
 
     def delete_user(self):
         self.clear_frame(self.output)
+
+        port = self.port_entry.get()
+        if not port:
+            self.txt = ttk.Label(self.output, text="Enter port!")
+            self.txt.pack(side='top')
+            return
+
         uid = self.entry_form_1.get()
         name = self.entry_form_2.get()
         password = self.entry_form_3.get()
