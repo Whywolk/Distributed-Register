@@ -41,3 +41,6 @@ Running client:
 ```
 $ python3 client.py
 ```
+
+### Scheme
+![See scheme.svg](./scheme.svg)
