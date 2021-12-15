@@ -29,11 +29,15 @@ $ pip3 install -r requirements.txt
 
 ### Usage
 Running server:
+
+**Linux**
 ```
 $ python3 server.py port <port> db <sqlite_file_name>
 ```
 
 Running client:
+
+**Linux**
 ```
 $ python3 client.py
 ```
