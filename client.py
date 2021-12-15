@@ -1,46 +1,22 @@
-import requests
-import sys
+#    This file is a part of Distributed-Register source code
+#    Copyright (C) 2021  Authors:   Alex Shirshov <https://github.com/Whywolk>
+#                                   w0rest <https://github.com/w0resT>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-if __name__ == "__main__":
-    response = None
-    server_port = 5000
-    argc = len(sys.argv) - 1
+from client_app.client_gui import ClientApp
 
-    try:
-        # Requests func
-        if sys.argv[1] == 'port':
-            if argc >= 2:
-                server_port = sys.argv[2]
-
-            if argc >= 3 and sys.argv[3] == 'get':
-                # port 500x get all
-                if argc == 3:
-                    response = requests.get("http://localhost:" + server_port + "/users")
-
-                # port 500x get uid
-                elif argc == 4:
-                    response = requests.get("http://localhost:" + server_port + "/user",
-                                            json={'uid': sys.argv[4]})
-
-            # port 500x post username password
-            elif argc >= 5 and sys.argv[3] == 'post':
-                response = requests.post("http://localhost:" + server_port + "/user",
-                                         json={'name': sys.argv[4], 'password': sys.argv[5]})
-
-            # port 500x delete uid username
-            elif argc >= 6 and sys.argv[3] == 'delete':
-                response = requests.delete("http://localhost:" + server_port + "/user",
-                                           json={'uid': sys.argv[4],
-                                                 'name': sys.argv[5],
-                                                 'password': sys.argv[6]})
-            else:
-                print("[Error] Bad arguments bro. Using: port 500x get/post/delete ...")
-        else:
-            print("[Error] Bad arguments bro. Using: port 500x ...")
-    except Exception as error:
-        print("[Exception error] " + str(error))
-
-
-    if response is not None:
-        print(response.status_code, response.headers)
-        print(response.text)
+if __name__ == '__main__':
+    app = ClientApp()
+    app.run()
